@@ -1,6 +1,6 @@
 from youtube_transcript_api import YouTubeTranscriptApi
 from datetime import datetime
-
+from utils import youtube
 # ID del video (lo que está después de v= en la URL)
 video_id = "KoSUo-dWxIU"
 
