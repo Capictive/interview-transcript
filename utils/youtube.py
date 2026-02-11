@@ -1,9 +1,38 @@
 from youtube_transcript_api import YouTubeTranscriptApi
 
+from googleapiclient.discovery import build
+
+def find_videos(query, api_key, max_results=10):
+    youtube = build('youtube', 'v3', developerKey=api_key)
+
+    request = youtube.search().list(
+        part="snippet",          # 'snippet' contiene título, descripción, thumbnails
+        q=query,                 # Término de búsqueda
+        type="video",            # Filtrar por video, channel o playlist
+        maxResults=max_results,
+        videoDuration = "long" ,               # Opcional: ordenar por fecha (útil para noticias políticas)
+        regionCode="PE"          # Opcional: Priorizar resultados de Perú
+    )
+    response = request.execute()
+
+    resultados = []
+    for item in response.get('items', []):
+        video_data = {
+            'titulo': item['snippet']['title'],
+            'video_id': item['id']['videoId'],
+            'fecha': item['snippet']['publishedAt'],
+            'canal': item['snippet']['channelTitle']
+        }
+        resultados.append(video_data)
+    
+    return resultados
+
 def get_transcript(video_id: str, languages: list[str] = ['es']) -> list[dict]:
     """
     Obtiene la transcripción de un video de YouTube dado su ID.
     """
+
+    print(f"Obteniendo transcripción para video ID: {video_id} con idiomas preferidos: {languages}")
     transcript = YouTubeTranscriptApi().fetch(video_id=video_id, languages=languages)
     
     return transcript
@@ -69,6 +98,6 @@ def save_transcript_to_file(video_titulo: str, transcript: list[dict], filename:
     with open(filename, "w", encoding="utf-8") as f:
         f.write("\n".join(header + lines))
 
-
-trancript = get_transcript("Yum8lIUTu5E", languages=['es', 'en'])
-save_transcript_to_file("SíCreo", trancript, "Elecciones 2027 ¿Cuáles son las propuestas electorales del partido SíCreo.txt")
+if __name__ == "__main__":
+    trancript = get_transcript("SY22W66tpWQ", languages=['es', 'en'])
+    save_transcript_to_file("Integridad Democratica", trancript, "Entrevista.txt")

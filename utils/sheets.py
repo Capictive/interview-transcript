@@ -71,6 +71,17 @@ def get_relevant_party_info(row: int) -> dict:
     }
     return party_dict
 
+def get_selected_party_info():
+    """
+    Selecciona aleatoriamente un partido donde transcripción es FALSE y devuelve su info.
+    """
+    row = select_random_transcription_cell_false()
+    if row:
+        party_info = get_relevant_party_info(row)
+        return party_info, row
+    else:
+        return None, None
+
 def main_flow():
     row = select_random_transcription_cell_false()
     if row:
@@ -82,4 +93,4 @@ def main_flow():
     else:
         print("No hay partidos pendientes de transcripción.")
 
-main_flow()
+# main_flow()  # Comentado para no ejecutar automáticamente
